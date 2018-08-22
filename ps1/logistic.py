@@ -3,8 +3,9 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-alpha = 0.001
+alpha = 0.01
 theta = np.zeros(3)
+epsilon = 0.001
 
 def sigmoid(theta, x):
     return 1.0 / (1.0 + math.exp(-np.dot(theta, x)))
@@ -18,9 +19,27 @@ y = ydata.values
 intercept = np.ones((y.size, 1))
 x = np.concatenate((intercept, x), axis=1)
 
-for i in range(len(y)):
-    theta += alpha * (y[i,:] - sigmoid(theta, x[i,:])) * x[i,:]
+i = np.random.randint(y.size)
+grad = sigmoid(theta, -y[i,:] * x[i,:]) * y[i,:] * x[i,:]
+j = 1
+k = 1
+while (np.linalg.norm(grad) > epsilon):
+    theta += alpha * grad
+    i = np.random.randint(y.size)
+    grad = sigmoid(theta, -y[i,:] * x[i,:]) * y[i,:] * x[i,:]
+    print(str(k) + "    " + str(theta) + '\n')
+    if (j == 20000):
+        alpha /= 10
+        j = 1
+    j += 1
+    k += 1
+    if (k > 100000): break
     
 print(theta)
-#plt.scatter(xdata.values[:, 0], xdata.values[:, 1], c=ydata.values[:, 0])
-#plt.show()
+
+plt.scatter(xdata.values[:, 0], xdata.values[:, 1], c=ydata.values[:, 0])
+
+plotx = np.arange(np.amin(x[:, 1]), np.amax(x[:, 1]), 0.01)
+plt.plot(plotx, -theta[0]/theta[2] - (theta[1]/theta[2]) * plotx)
+
+plt.show()
