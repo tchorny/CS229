@@ -27,7 +27,7 @@ while (np.linalg.norm(grad) > epsilon):
     theta += alpha * grad
     i = np.random.randint(y.size)
     grad = sigmoid(theta, -y[i,:] * x[i,:]) * y[i,:] * x[i,:]
-    print(str(k) + "    " + str(theta) + '\n')
+    #print(str(k) + "    " + str(theta) + '\n')
     if (j == 20000):
         alpha /= 10
         j = 1
@@ -37,7 +37,7 @@ while (np.linalg.norm(grad) > epsilon):
     
 print(theta)
 
-plt.scatter(xdata.values[:, 0], xdata.values[:, 1], c=ydata.values[:, 0])
+plt.scatter(x[:, 1], x[:, 2], c=y[:, 0])
 
 plotx = np.arange(np.amin(x[:, 1]), np.amax(x[:, 1]), 0.01)
 plt.plot(plotx, -theta[0]/theta[2] - (theta[1]/theta[2]) * plotx)
