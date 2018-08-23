@@ -27,10 +27,6 @@ def calc_grad(X, Y, theta):
 
     return grad
 
-##
-## This function is useful to debug
-## Ensure that loss is going down over iterations
-##
 def calc_loss(X, Y, theta):
     m, n = X.shape
 
@@ -48,15 +44,17 @@ def calc_hessian(X, Y, theta):
     return H
 
 def logistic_regression(X, Y):
+    epsilon = 0.0001
     m, n = X.shape
     theta = np.zeros((n, 1))
-    print(str(calc_loss(X, Y, theta)) + '\n')
-    ############
-    for i in range(10):
+    delta_loss = 1.0
+
+    while(abs(delta_loss) > epsilon):
+        loss_0 = calc_loss(X, Y, theta)
         grad = calc_grad(X, Y, theta)
         inv_hessian = np.linalg.inv(calc_hessian(X, Y, theta))
         theta -= inv_hessian @ grad
-        print(str(calc_loss(X, Y, theta)) + '\n')
+        delta_loss = calc_loss(X, Y, theta) - loss_0
 
     return theta
 
