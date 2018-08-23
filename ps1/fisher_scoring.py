@@ -1,9 +1,9 @@
 from __future__ import division
 import numpy as np
 import matplotlib as mpl
-mpl.use('Agg')
+from matplotlib.pyplot import axis
+#mpl.use('Agg')
 import matplotlib.pyplot as plt
-
 
 def load_data():
     X = np.genfromtxt('logistic_x.txt')
@@ -13,22 +13,17 @@ def load_data():
 def add_intercept(X_):
     m, n = X_.shape
     X = np.zeros((m, n + 1))
-
-    ################   
+  
     X[:, 0].fill(1)
     X[:, 1:] = X_
-    ################
 
     return X
 
 def calc_grad(X, Y, theta):
     m, n = X.shape
-    grad = np.zeros(theta.shape)
 
-    ##############
-
-
-    ##############
+    grad = (np.sum((-1.0 / m) * (1 / (1 + np.exp(Y * (X @ theta))))
+                   * Y * X, axis=0)).reshape((n, 1))
 
     return grad
 
@@ -38,52 +33,51 @@ def calc_grad(X, Y, theta):
 ##
 def calc_loss(X, Y, theta):
     m, n = X.shape
-    loss = 0.
 
-    ###########
-
-
-    ###########
-
-    return loss
+    return np.sum((1/m) * np.log(1 + np.exp(-Y * (X @ theta))))
 
 def calc_hessian(X, Y, theta):
     m, n = X.shape
     H = np.zeros((n, n))
 
-    ##############
-
-
-    #############
+    temp = np.exp(Y * (X @ theta))
+    for i in range(m):
+        Xi = X[i, :].reshape((1, n))
+        H += (1.0 / m) * (Xi.T @ Xi) * (temp[i] / (1 + temp[i])**2)
 
     return H
 
 def logistic_regression(X, Y):
     m, n = X.shape
-    theta = np.zeros(n)
-
+    theta = np.zeros((n, 1))
+    print(str(calc_loss(X, Y, theta)) + '\n')
     ############
-
-
-    ############
+    for i in range(10):
+        grad = calc_grad(X, Y, theta)
+        inv_hessian = np.linalg.inv(calc_hessian(X, Y, theta))
+        theta -= inv_hessian @ grad
+        print(str(calc_loss(X, Y, theta)) + '\n')
 
     return theta
 
 def plot(X, Y, theta):
     plt.figure()
 
-    ############
+    plt.scatter(X[:, 1], X[:, 2], c=Y[:, 0])
+    plotx = np.arange(np.amin(X[:, 1]), np.amax(X[:, 1]), 0.01)
+    plt.plot(plotx, -theta[0, 0]/theta[2, 0] - (theta[1, 0]/theta[2, 0]) * plotx)
 
-
-    ############
+    plt.show()
 
     plt.savefig('ps1q1c.png')
     return
 
 def main():
     X_, Y = load_data()
+    Y = Y.reshape((Y.size, 1))
     X = add_intercept(X_)
     theta = logistic_regression(X, Y)
+    print(theta)
     plot(X, Y, theta)
 
 if __name__ == '__main__':
